@@ -12,5 +12,9 @@ dependencies = [
     "pandas",
 ]
 
-[tool.setuptools]
-packages = ["maspy"]
+[tool.setuptools.packages.find]
+include = ["maspy*"]
+
+[tool.setuptools.package-data]
+maspy = ["py.typed", "logger_config.json"]
+"maspy.learning" = ["py.typed"]
