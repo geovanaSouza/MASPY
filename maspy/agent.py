@@ -2162,6 +2162,15 @@ class Agent:
             if self._pending_events != [] and self._pending_events[0][1] > self.cycle_counter:
                 return self._pending_events.pop(0)[0], False
             else:
+                if self._pending_events != []:
+                    expired_event, expired_timer, expired_reason = self._pending_events[0]
+                    if self.logging:
+                        self.logger.debug(
+                            f"Pending event {expired_event.data.name} expired at front "
+                            f"(timer={expired_timer}, cycle={self.cycle_counter}, reason={expired_reason}); "
+                            f"blocking {len(self._pending_events) - 1} subsequent pending event(s)",
+                            extra=self.agent_info,
+                        )
                 return None, False
         else:
             return self.__events.pop(0), True
