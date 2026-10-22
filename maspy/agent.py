@@ -576,10 +576,9 @@ class Agent:
     def _build_plan_index(self):
         self._plan_index.clear()
         for plan in self._plans:
-            key = (plan.trigger.change, type(plan.trigger.data), plan.trigger.data.name)
-            if key not in self._plan_index:
-                self._plan_index[key] = []
-            self._plan_index[key].append(plan)
+            change, data = self._to_belief_goal(plan.trigger)
+            key = (change, type(data), data.name)
+            self._plan_index.setdefault(key, []).append(plan)
     
     def filter_perceptions(self, operation: Operation, option: Option, group: List[str] | str):
         """
@@ -2206,13 +2205,17 @@ class Agent:
         """ Retrieves the plans that are triggered by the event """
         if event is None or event.data is None: 
             return None
-        key = (event.change, type(event.data), event.data.name)
+        _, event_data = self._to_belief_goal(event)
+        if event_data is None:
+            return None
+        key = (event.change, type(event_data), event_data.name)
         retrieved = self._plan_index.get(key, None)
         if retrieved is None:
             return None
         applicable: List[Plan] = []
         for plan in retrieved:
-            if self._compare_data(plan.trigger.data, event.data, True, True, False):
+            _, trigger_data = self._to_belief_goal(plan.trigger)
+            if trigger_data is not None and self._compare_data(trigger_data, event_data, True, True, False):
                 applicable.append(plan)
         if applicable == []:
             return None
