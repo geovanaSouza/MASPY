@@ -38,6 +38,17 @@ Everything for ``MASPY`` to run correctly in imported this way.
 
 Every internal Function is explained in our [WIKI](https://github.com/laca-is/MASPY/wiki)
 
+## Running the examples locally
+
+The repository ships a `Makefile` (run `make help` for the current targets/options). Typical flow:
+
+    make setup
+    make list-examples
+    make run EXAMPLE=ex-hello-world
+
+Overrides: `VENV`, `PYTHON`, `EXAMPLE` (e.g. `make setup VENV=.venv312`).
+Direct usage: `./scripts/run_example.sh <example>`.
+
 ## Rough edges
 The project still has some rough edges that should be considered. 
 
