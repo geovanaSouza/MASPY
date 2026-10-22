@@ -827,9 +827,11 @@ class Agent:
         
         if isinstance(data_type, Plan):
             self._plans.append(data_type)
+            self._build_plan_index()
             return
         elif isinstance(data_type, Iterable) and self._is_type_iter(data_type, Plan):
             self._plans.extend(data_type)
+            self._build_plan_index()
             return
         
         data_type = cast(Belief | Goal |Iterable[Belief | Goal], data_type)
@@ -892,6 +894,7 @@ class Agent:
                     d.remove(typ)
                 elif isinstance(typ, Plan):
                     self._plans.remove(typ)
+                    self._build_plan_index()
                 else:
                     if self.logging: self.logger.warning(f"Data_Type {typ} is neither Belief, Goal or Plan", extra=self.agent_info)
                     self.print(f"Data_Type {typ} is neither Belief, Goal or Plan")
@@ -1602,7 +1605,7 @@ class Agent:
 
             case 'untellHow':
                 assert isinstance(msg, Plan), f'Act untellHow must receive a Plan not {type(msg).__qualname__}'
-                self.add(msg, False, True)
+                self.rm(msg, False, True)
 
             case 'askHow':
                 assert isinstance(msg, Ask), f'Act askHow must request an Ask not {type(msg).__qualname__}'
