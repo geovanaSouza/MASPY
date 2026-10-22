@@ -2158,13 +2158,31 @@ class Agent:
         """ 
             Selects the next Event (FIFO) to be processed 
         """
-        if self.__events == []:
-            if self._pending_events != [] and self._pending_events[0][1] > self.cycle_counter:
-                return self._pending_events.pop(0)[0], False
-            else:
-                return None, False
-        else:
+        if self.__events != []:
             return self.__events.pop(0), True
+        if not self._pending_events:
+            return None, False
+        event, timer, reason = self._pending_events[0]
+        if timer > self.cycle_counter:
+            self._pending_events.pop(0)
+            return event, False
+        self._pending_events.pop(0)
+        self._expire_pending_event(event, reason)
+        if self._pending_events:
+            return self._pending_events.pop(0)[0], False
+        return None, False
+
+    def _expire_pending_event(self, event: Event, reason: str) -> None:
+        """Fails an expired pending Goal, mirroring the normal retry failure path."""
+        if isinstance(event.data, Goal) and event.change.name == "gain":
+            goal = event.data
+            try:
+                self.__goals[goal.source][goal.name].remove(goal)
+            except (KeyError, ValueError):
+                pass
+            self._new_event(failure, goal, instant=False)
+        if self.logging:
+            self.logger.debug(f"Pending event {event.data} expired ({reason})", extra=self.agent_info)
     
     def _instant_plan(self, event: Event):
         """ Executes the plan triggered by the event immediately """
