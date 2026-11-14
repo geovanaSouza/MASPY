@@ -20,9 +20,18 @@ if [[ -z "$EXAMPLE" ]]; then
   exit 1
 fi
 
-if [[ ! -f "$ROOT_DIR/examples/${EXAMPLE}.py" ]]; then
-  echo "Example not found: examples/${EXAMPLE}.py"
+# Examples live in category subfolders (Basic/, Intermediate/, Advanced/, Learning/, ...).
+# Accept either a bare name (ex-hello-world) or a relative path (Basic/ex-hello-world).
+if [[ -f "$ROOT_DIR/examples/${EXAMPLE}.py" ]]; then
+  EX_FILE="$ROOT_DIR/examples/${EXAMPLE}.py"
+else
+  EX_FILE="$(find "$ROOT_DIR/examples" -type f -name "${EXAMPLE}.py" -print -quit)"
+fi
+
+if [[ -z "$EX_FILE" ]]; then
+  echo "Example not found: ${EXAMPLE}.py (searched examples/ recursively)"
+  echo "Run 'make list-examples' to see the available names."
   exit 1
 fi
 
-PYTHONPATH="$ROOT_DIR" exec "$ROOT_DIR/.venv/bin/python" "$ROOT_DIR/examples/${EXAMPLE}.py"
+PYTHONPATH="$ROOT_DIR" exec "$ROOT_DIR/.venv/bin/python" "$EX_FILE"

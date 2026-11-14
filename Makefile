@@ -14,7 +14,7 @@ run: ## Run an example: make run EXAMPLE=<name>
 
 list-examples: ## List runnable example names
 	@echo "Available examples:"
-	@for f in examples/*.py; do echo "  $$(basename "$$f" .py)"; done
+	@find examples -name '*.py' | sed 's|^examples/||; s|\.py$$||' | sort | while read -r name; do echo "  $$name"; done
 
 help: ## Show this help
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z0-9_.-]+:.*?## / {printf "  %-16s %s\n", $$1, $$2}' $(MAKEFILE_LIST)

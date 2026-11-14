@@ -42,9 +42,12 @@ Every internal Function is explained in our [WIKI](https://github.com/laca-is/MA
 
 The repository ships a `Makefile` (run `make help` for the current targets/options). Typical flow:
 
+Examples live in category subfolders (`Basic/`, `Intermediate/`, `Advanced/`, `Learning/`, ...), so you can pass either a bare name or a relative path:
+
     make setup
     make list-examples
-    make run EXAMPLE=ex-hello-world
+    make run EXAMPLE=ex-hello-world            # searches examples/ recursively
+    make run EXAMPLE=Basic/ex-hello-world      # or with the explicit folder
 
 Overrides: `VENV`, `PYTHON`, `EXAMPLE` (e.g. `make setup VENV=.venv312`).
 Direct usage: `./scripts/run_example.sh <example>`.
